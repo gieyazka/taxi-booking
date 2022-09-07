@@ -238,7 +238,7 @@ export function BookingForm() {
 // return  null;
     axios
       .post("https://taxi.powermap.live/newtaxi/public/v1/user/ridelater", {
-        book_from : "PC",
+        book_from : "pc",
         datetime: formData.datetime,
         dlatitude: formData.dlatitude,
         dlocation: formData.dlocation,
