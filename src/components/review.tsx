@@ -159,7 +159,7 @@ export default function Review({
           }}
           // optional
           onUnmount={(map) => {
-            console.log("DirectionsRenderer onUnmount map: ", map);
+            // console.log("DirectionsRenderer onUnmount map: ", map);
           }}
         >
           {!count && (
@@ -175,10 +175,13 @@ export default function Review({
                   lat: parseFloat(data.platitude || "0.00"),
                   lng: parseFloat(data.plongtitude || "0.00"),
                 }),
-                // destination: { query: state.destination },
-                // origin: { query: state.origin },
+           
                 travelMode: google.maps.TravelMode["DRIVING"],
                 provideRouteAlternatives: true,
+                // drivingOptions: {
+                //   departureTime: new Date(/* now, or future date */),
+                //   trafficModel:  google.maps.TrafficModel.BEST_GUESS
+                // },
               }}
               // required
               callback={directionsCallback}
@@ -192,10 +195,19 @@ export default function Review({
           )}
         </GoogleMap>
       </CheckScript>
+      <div className="flex justify-between item-center mt-2">
+          <Typography style={{ margin: "auto 0 " }} variant="subtitle1">
+            หมายเลขคำขอ
+          </Typography>
+          <div className="flex flex-col ">
+            <p className="  font-bold text-end ">{data.orgReqID || ""}</p>
+          </div>
+        </div>
       <div className="flex justify-between">
         <Typography variant="subtitle1">วันที่</Typography>
         <p className=" font-bold">{data.datetime}</p>
       </div>
+     
       <div className="flex justify-between item-center mt-2">
         <Typography style={{ margin: "auto 0" }} variant="subtitle1">
           ชื่อผุ้ขอ
@@ -234,6 +246,16 @@ export default function Review({
           </p>
         </div>
       </div>
+      {data.remark !== "" && (
+        <div className="flex justify-between item-center mt-2">
+          <Typography style={{ margin: "auto 0 " }} variant="subtitle1">
+            หมายเหตุ
+          </Typography>
+          <div className="flex flex-col ">
+            <p className="  text-end ">{data.remark || ""}</p>
+          </div>
+        </div>
+      )}
       <div className="flex justify-end">
         <Button onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
           Back

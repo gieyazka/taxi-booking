@@ -49,7 +49,7 @@ function App({ children }: any) {
   return (
     <div>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <Router>
+        <Router basename="/">
           <Fragment>
             <Routes>
               {/* <Route path="/" element={<AuthRoute />}>
@@ -57,8 +57,8 @@ function App({ children }: any) {
                 <Route path="/test" element={<Test />} />
               </Route> */}
               {/* <Route path="/signin" element={<AuthRoute />} /> */}
-              <Route path="/" element={<BookingForm />} />
-              <Route path="*" element={<div>404</div>} />
+              <Route path="*" element={<BookingForm />} />
+              {/* <Route path="*" element={<div>404</div>} /> */}
             </Routes>
           </Fragment>
         </Router>

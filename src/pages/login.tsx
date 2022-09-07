@@ -75,7 +75,7 @@ export function SignIn() {
       }
     }
     axios
-      .post("http://147.50.144.212/newtaxi/public/v1/user/login", {
+      .post("https://taxi.powermap.live/newtaxi/public/v1/user/login", {
         username: email,
         device_token: "test",
         login_by: "android",
@@ -96,6 +96,7 @@ export function SignIn() {
           localStorage.setItem("user", JSON.stringify({
             id: res.data.user.id,
             token: res.data.user.token,
+            type : res.data.user.type
           }));
 
           // <Navigate to="/test" />;

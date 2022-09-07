@@ -54,9 +54,9 @@ export function BookingForm() {
   useEffect(() => {
     const getUser = async () => {
       await axios
-        .post("http://147.50.144.212/newtaxi/public/v1/user/get", {
-          token: JSON.parse(localStorage.getItem("user") || "").token,
-          user_type: "EGAT",
+        .post("https://taxi.powermap.live/newtaxi/public/v1/user/get", {
+          email: JSON.parse(localStorage.getItem("user") || "").email,
+          orgType: JSON.parse(localStorage.getItem("user") || "").orgType,
         })
         .then((r) => {
           setAllUser(r.data.user);
@@ -109,8 +109,11 @@ export function BookingForm() {
   const [activeStep, setActiveStep] = React.useState(0);
   const handleSubmit = async (e: any) => {
     // e.preventDefault();
-    e.datetime = dayjs(e.datetime).format("YYYY-MM-DD hh:mm");
-    // return
+    
+    // console.log(e);
+    e.datetime = dayjs(e.datetime).format("YYYY-MM-DD HH:mm");
+    // console.log(e);
+    // return;
     //    console.log(e.currentTarget.length);
     setLoading(true);
     let newformData: formData = {
@@ -118,23 +121,25 @@ export function BookingForm() {
       is_share: 0,
       no_of_seats: 1,
       paymentOpt: 1,
-
+    
       timezone: "+07:00",
       type: 20,
     };
 
     setLoading(false);
-
     const Eta = await axios.post(
-      "http://147.50.144.212/newtaxi/public/v1/api/eta/new",
+      "https://taxi.powermap.live/newtaxi/public/v1/api/eta/new",
       {
         type_id: 20,
         olat: newformData.platitude,
         olng: newformData.plongtitude,
         dlat: newformData.dlatitude,
         dlng: newformData.dlongtitude,
+        id :  newformData.id,
+        datetime : newformData.datetime
       }
     );
+    
     // console.log(Eta.data.success);
     if (!Eta.data.success) {
       setState({
@@ -171,6 +176,8 @@ export function BookingForm() {
     setActiveStep(activeStep - 1);
   };
   const confirmBook = async () => {
+    // console.log(formData);
+    // return null
     let userData;
     let regis = false;
     if (allUser.find((d) => d.email === formData.email) === undefined) {
@@ -178,7 +185,7 @@ export function BookingForm() {
 
       //register
       userData = await axios.post(
-        "http://147.50.144.212/newtaxi/public/v1/user/signup",
+        "https://taxi.powermap.live/newtaxi/public/v1/user/signup",
         {
           firstname: formData.firstName,
           lastname: formData.lastName,
@@ -193,7 +200,8 @@ export function BookingForm() {
           country: "TH",
           social_unique_id: "a",
           time_zone: "+07:00",
-          user_login_type: "EGAT",
+          user_login_type:  JSON.parse(localStorage.getItem("user") || "").orgType,
+          
         }
       );
 
@@ -215,7 +223,7 @@ export function BookingForm() {
     }
     //  else {
     //   userData = await axios.post(
-    //     "http://147.50.144.212/newtaxi/public/v1/user/login",
+    //     "https://taxi.powermap.live/newtaxi/public/v1/user/login",
     //     {
     //       username: formData.tel?.replace("0", "+66"),
     //       device_token: "test",
@@ -226,10 +234,11 @@ export function BookingForm() {
     //     }
     //   );
     // }
-    console.log(formData);
-
+    // console.log(formData);
+// return  null;
     axios
-      .post("http://147.50.144.212/newtaxi/public/v1/user/ridelater", {
+      .post("https://taxi.powermap.live/newtaxi/public/v1/user/ridelater", {
+        book_from : "PC",
         datetime: formData.datetime,
         dlatitude: formData.dlatitude,
         dlocation: formData.dlocation,
@@ -241,6 +250,7 @@ export function BookingForm() {
         id: formData.id,
         is_share: 0,
         no_of_seats: 1,
+        orgReqId : formData.orgReqID,
         paymentOpt: 1,
         platitude: formData.platitude,
         plocation: formData.plocation,
@@ -248,6 +258,7 @@ export function BookingForm() {
         timezone: "+07:00",
         type: 20,
         token: formData.token,
+        remark : formData.remark
       })
       .then((res) => {
         if (res.data.success) {

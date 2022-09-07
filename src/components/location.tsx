@@ -59,7 +59,9 @@ export default function AddressForm({
       dlocation: data.dlocation || "",
       dlatitude: data.dlatitude || "",
       dlongtitude: data.dlongtitude || "",
-      token : data.token || ""
+      token: data.token || "",
+      remark: data.remark || "",
+      orgReqID: data.orgReqID || "",
     },
   });
 
@@ -84,6 +86,8 @@ export default function AddressForm({
   const onEndSearchLoad = (ref: any) => (endPlaceRef.current = ref);
   const onStartPlacesChanged = () => {
     let origin = startPlaceRef.current && startPlaceRef.current.getPlaces();
+    // console.log(origin[0]);
+    
     let lat = origin[0].geometry.location.lat();
     let lng = origin[0].geometry.location.lng();
     let name = origin[0].name;
@@ -118,19 +122,34 @@ export default function AddressForm({
       <CheckScript>
         <form onSubmit={handleSubmit(handleSubmitForm)}>
           <Box>
+         
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
+                <TextField
+                  {...register("orgReqID")}
+                  defaultValue={data.orgReqID || ""}
+                  id="orgReqID"
+                  name="orgReqID"
+                  label="Request ID / หมายเลขคำขอ"
+                  fullWidth
+                  variant="standard"
+                />
+              </Grid>
+              <Grid item xs={12}  sm={6}>
                 <Controller
                   name="datetime"
                   control={control}
                   //@ts-ignored
-                  rules={{ required: true, pattern: "[0]{1}[689]{1}[0-9]{8}" }}
+                  rules={{ required: true}}
                   render={({ field }) => (
                     <DateTimePicker
                       {...field}
+                      ampm={false}
                       label="Date / วันที่"
                       value={data.datetime}
-                      onChange={(e) => setData({ ...data, datetime: e })}
+                      onChange={(e) => { 
+                          setValue('datetime',e)
+                        setData({ ...data, datetime: e })}}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -148,14 +167,14 @@ export default function AddressForm({
                 <Autocomplete
                   onChange={(event: any, newValue: any) => {
                     console.log(newValue);
-                    
+
                     let newData: userEGAT = newValue;
                     setValue("firstName", newData.firstname);
                     setValue("lastName", newData.lastname);
                     setValue("email", newData.email);
                     setValue("id", newData.id);
                     setValue("tel", newData.phone_number.replace("+66", "0"));
-                    setValue('token',newData.token)
+                    setValue("token", newData.token);
                   }}
                   //  inputValue={inputValue}
                   //  onInputChange={(event, newInputValue) => {
@@ -321,6 +340,7 @@ export default function AddressForm({
                 variant="standard"
               />
             </Grid> */}
+          
               <Grid item xs={12}>
                 <br />
                 <hr />
@@ -369,7 +389,20 @@ export default function AddressForm({
                   variant="standard"
                 />
               </Grid> */}
-
+    <Grid item xs={12} sm={12}>
+                <TextField
+                  {...register("remark")}
+                  multiline
+                  rows={4}
+                  defaultValue={data.plongtitude || ""}
+                  id="remark"
+                  name="remark"
+                  label="Remark / หมายเหตุ"
+                  fullWidth
+                  variant="standard"
+                />
+              </Grid>
+              
               {/* <Grid item xs={12}>
             <FormControlLabel
               control={

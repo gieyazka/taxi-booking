@@ -67,5 +67,7 @@ export interface userEGAT {
     timezone: "+07:00";
     type: 20;
     token? : string;
-    minAmount? : number
+    minAmount? : number,
+    remark? : string,
+    orgReqID? : string
   }
