@@ -121,12 +121,13 @@ export function BookingForm() {
       is_share: 0,
       no_of_seats: 1,
       paymentOpt: 1,
-    
+      
       timezone: "+07:00",
       type: 20,
     };
-
     setLoading(false);
+    // return ;
+
     const Eta = await axios.post(
       "https://taxi.powermap.live/newtaxi/public/v1/api/eta/new",
       {
@@ -140,12 +141,12 @@ export function BookingForm() {
       }
     );
     
-    // console.log(Eta.data.success);
+    // console.log(Eta);
     if (!Eta.data.success) {
       setState({
         ...state,
         open: true,
-        message: "Invalid Location",
+        message: "Invalid Time",
         type: "error",
       });
       setLoading(false);
@@ -234,8 +235,8 @@ export function BookingForm() {
     //     }
     //   );
     // }
-    // console.log(formData);
-// return  null;
+    let newRemark = JSON.stringify({remark : formData.remark,passenger : formData.passenger})
+    
     axios
       .post("https://taxi.powermap.live/newtaxi/public/v1/user/ridelater", {
         book_from : "pc",
@@ -258,7 +259,7 @@ export function BookingForm() {
         timezone: "+07:00",
         type: 20,
         token: formData.token,
-        remark : formData.remark
+        remark : newRemark
       })
       .then((res) => {
         if (res.data.success) {

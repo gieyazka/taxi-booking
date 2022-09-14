@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Box, Button, FormControl } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   DirectionsRenderer,
   DirectionsService,
@@ -15,6 +15,7 @@ import {
 } from "@react-google-maps/api";
 import { formData, userEGAT } from "../interface";
 
+import AddIcon from "@mui/icons-material/Add";
 import Autocomplete from "@mui/material/Autocomplete";
 import CheckScript from "./checkScrip";
 import Checkbox from "@mui/material/Checkbox";
@@ -22,6 +23,7 @@ import { DataArray } from "@mui/icons-material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
+import RemoveIcon from '@mui/icons-material/Remove';
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
@@ -45,7 +47,7 @@ export default function AddressForm({
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm({
+  } = useForm<formData>({
     defaultValues: {
       tel: data.tel || "",
       datetime: data.datetime,
@@ -62,8 +64,20 @@ export default function AddressForm({
       token: data.token || "",
       remark: data.remark || "",
       orgReqID: data.orgReqID || "",
+      passenger: !data.hasOwnProperty('passenger') ?[{ name: "" }] : data.passenger,
     },
   });
+  
+  
+  const { fields, append, prepend, remove, swap, move, insert, replace } =
+    useFieldArray({
+      control,
+      //@ts-ignored
+      name: "passenger",
+      // rules: {
+      //   required: true,
+      // },
+    });
 
   let cloneNewuser = null;
   if (data.email !== undefined) {
@@ -78,8 +92,7 @@ export default function AddressForm({
   }
   const startPlaceRef = React.useRef<any>();
   const endPlaceRef = React.useRef<any>();
-  const startPlace = React.useRef<any>();
-  const endPlace = React.useRef<any>();
+
   const originRef = React.useRef<any>();
   const destinationRef = React.useRef<any>();
   const onStartSearchLoad = (ref: any) => (startPlaceRef.current = ref);
@@ -87,7 +100,7 @@ export default function AddressForm({
   const onStartPlacesChanged = () => {
     let origin = startPlaceRef.current && startPlaceRef.current.getPlaces();
     // console.log(origin[0]);
-    
+
     let lat = origin[0].geometry.location.lat();
     let lng = origin[0].geometry.location.lng();
     let name = origin[0].name;
@@ -114,6 +127,8 @@ export default function AddressForm({
     //   lng,
     // };
   };
+  // console.log(data);
+  
   return (
     <React.Fragment>
       {/* <Typography variant="h6" gutterBottom>
@@ -122,9 +137,8 @@ export default function AddressForm({
       <CheckScript>
         <form onSubmit={handleSubmit(handleSubmitForm)}>
           <Box>
-         
             <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   {...register("orgReqID")}
                   defaultValue={data.orgReqID || ""}
@@ -135,21 +149,22 @@ export default function AddressForm({
                   variant="standard"
                 />
               </Grid>
-              <Grid item xs={12}  sm={6}>
+              <Grid item xs={12} sm={6}>
                 <Controller
                   name="datetime"
                   control={control}
                   //@ts-ignored
-                  rules={{ required: true}}
+                  rules={{ required: true }}
                   render={({ field }) => (
                     <DateTimePicker
                       {...field}
                       ampm={false}
                       label="Date / วันที่"
                       value={data.datetime}
-                      onChange={(e) => { 
-                          setValue('datetime',e)
-                        setData({ ...data, datetime: e })}}
+                      onChange={(e) => {
+                        setValue("datetime", e);
+                        setData({ ...data, datetime: e });
+                      }}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -340,7 +355,7 @@ export default function AddressForm({
                 variant="standard"
               />
             </Grid> */}
-          
+
               <Grid item xs={12}>
                 <br />
                 <hr />
@@ -389,7 +404,46 @@ export default function AddressForm({
                   variant="standard"
                 />
               </Grid> */}
-    <Grid item xs={12} sm={12}>
+
+              {fields.map((item, index) => {
+                // console.log(item);
+                
+                return (
+                  <Grid item xs={12} sm={12} key={item.id}>
+                    <div style={{display : 'flex'}}>
+                 
+                                 <Controller
+                render={({ field }) => 
+                <TextField
+                {...field}
+                // defaultValue={item.name}
+                // required
+        
+                id="passenger"
+             
+                label="Passenger / ผู้โดยสาร"
+                fullWidth
+                variant="standard"
+              />
+              }
+                name={`passenger.${index}.name`}
+                control={control}
+              />
+                      <AddIcon className={`mt-4 hover:bg-gray-200 rounded-md   ${index !== 0 ? 'ml-2' : 'ml-10' }`} onClick={() => append({ name: `` })}  />
+                      {index !== 0 &&
+                      <RemoveIcon className='mt-4 hover:bg-gray-200 rounded-md ml-2' onClick={() =>{
+                        
+                        remove(index)
+                      }}  />
+                      }
+
+                    </div>
+                  </Grid>
+                );
+              })}
+
+      
+              <Grid item xs={12} sm={12}>
                 <TextField
                   {...register("remark")}
                   multiline
@@ -402,7 +456,7 @@ export default function AddressForm({
                   variant="standard"
                 />
               </Grid>
-              
+
               {/* <Grid item xs={12}>
             <FormControlLabel
               control={

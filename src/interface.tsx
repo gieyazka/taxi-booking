@@ -69,5 +69,8 @@ export interface userEGAT {
     token? : string;
     minAmount? : number,
     remark? : string,
-    orgReqID? : string
+    orgReqID? : string,
+    passenger? : {name : string}[]
   }
+
+  
