@@ -109,7 +109,7 @@ export function BookingForm() {
   const [activeStep, setActiveStep] = React.useState(0);
   const handleSubmit = async (e: any) => {
     // e.preventDefault();
-    
+
     // console.log(e);
     e.datetime = dayjs(e.datetime).format("YYYY-MM-DD HH:mm");
     // console.log(e);
@@ -121,7 +121,7 @@ export function BookingForm() {
       is_share: 0,
       no_of_seats: 1,
       paymentOpt: 1,
-      
+
       timezone: "+07:00",
       type: 20,
     };
@@ -136,16 +136,15 @@ export function BookingForm() {
         olng: newformData.plongtitude,
         dlat: newformData.dlatitude,
         dlng: newformData.dlongtitude,
-        id :  newformData.id,
-        datetime : newformData.datetime
+        id: newformData.id,
+        datetime: newformData.datetime,
       }
     );
-    
+
     // console.log(Eta);
     if (!Eta.data.success) {
-      console.log("from non");
-      
-      
+      console.log("from gie");
+
       setState({
         ...state,
         open: true,
@@ -204,8 +203,8 @@ export function BookingForm() {
           country: "TH",
           social_unique_id: "a",
           time_zone: "+07:00",
-          user_login_type:  JSON.parse(localStorage.getItem("user") || "").orgType,
-          
+          user_login_type: JSON.parse(localStorage.getItem("user") || "")
+            .orgType,
         }
       );
 
@@ -238,11 +237,14 @@ export function BookingForm() {
     //     }
     //   );
     // }
-    let newRemark = JSON.stringify({remark : formData.remark,passenger : formData.passenger})
-    
+    let newRemark = JSON.stringify({
+      remark: formData.remark,
+      passenger: formData.passenger,
+    });
+
     axios
       .post("https://taxi.powermap.live/newtaxi/public/v1/user/ridelater", {
-        book_from : "pc",
+        book_from: "pc",
         datetime: formData.datetime,
         dlatitude: formData.dlatitude,
         dlocation: formData.dlocation,
@@ -254,7 +256,7 @@ export function BookingForm() {
         id: formData.id,
         is_share: 0,
         no_of_seats: 1,
-        orgReqId : formData.orgReqID,
+        orgReqId: formData.orgReqID,
         paymentOpt: 1,
         platitude: formData.platitude,
         plocation: formData.plocation,
@@ -262,7 +264,7 @@ export function BookingForm() {
         timezone: "+07:00",
         type: 20,
         token: formData.token,
-        remark : newRemark
+        remark: newRemark,
       })
       .then((res) => {
         if (res.data.success) {
