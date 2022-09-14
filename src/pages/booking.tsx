@@ -142,10 +142,11 @@ export function BookingForm() {
     
     // console.log(Eta.data.success);
     if (!Eta.data.success) {
+      
       setState({
         ...state,
         open: true,
-        message: "Invalid Location",
+        message: Eta.data.error_message,
         type: "error",
       });
       setLoading(false);
