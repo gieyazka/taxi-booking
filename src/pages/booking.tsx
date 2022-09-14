@@ -143,10 +143,11 @@ export function BookingForm() {
     
     // console.log(Eta);
     if (!Eta.data.success) {
+      
       setState({
         ...state,
         open: true,
-        message: "Invalid Time",
+        message: Eta.data.error_message,
         type: "error",
       });
       setLoading(false);
