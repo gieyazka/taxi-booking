@@ -143,7 +143,7 @@ export function BookingForm() {
 
     // console.log(Eta);
     if (!Eta.data.success) {
-      console.log("from gie");
+      console.log("from non 2");
 
       setState({
         ...state,
