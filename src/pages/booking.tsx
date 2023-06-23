@@ -65,7 +65,18 @@ export function BookingForm() {
     };
     getUser();
   }, []);
+  const getConfig = async (date: string) => {
+    let session = JSON.parse(localStorage.getItem("user") ?? "");
 
+    return await axios.post(
+      "https://taxi.powermap.live/newtaxi/public/v1/api/eta/getconfigprice",
+      {
+        org: session.orgType,
+
+        datetime: date
+      }
+    );
+  };
   const [formData, setFormData] = React.useState<formData>({
     is_share: 0,
     no_of_seats: 1,
@@ -73,7 +84,19 @@ export function BookingForm() {
     datetime: new Date(),
     timezone: "+07:00",
     type: 20,
+    priceConfig: {
+      base_distance: "0",
+      base_price: "0",
+      minimum_price: "0",
+      price_per_distance: "0",
+      price_per_time: "0",
+    }
+    // eta_distance: 0,
+    // eta_distance_price: 0,
+    // eta_time: 0,
+    // eta_time_price: 0,
   });
+
   const [state, setState] = React.useState<State>({
     open: false,
     vertical: "top",
@@ -106,8 +129,27 @@ export function BookingForm() {
         throw new Error("Unknown step");
     }
   }
+
   const [activeStep, setActiveStep] = React.useState(0);
   const handleSubmit = async (e: any) => {
+    if (e.dlatitude === "") {
+      setState({
+        ...state,
+        open: true,
+        message: "Please select destination",
+        type: "error",
+      });
+      return;
+    }
+    if (e.platitude === "") {
+      setState({
+        ...state,
+        open: true,
+        message: "Please select start location",
+        type: "error",
+      });
+      return;
+    }
     // e.preventDefault();
 
     // console.log(e);
@@ -128,6 +170,9 @@ export function BookingForm() {
     setLoading(false);
     // return ;
 
+    const configData= await getConfig(newformData.datetime);
+    
+    
     const Eta = await axios.post(
       "https://taxi.powermap.live/newtaxi/public/v1/api/eta/new",
       {
@@ -141,11 +186,7 @@ export function BookingForm() {
       }
     );
 
-    // console.log(Eta);
     if (!Eta.data.success) {
-      console.log("from non 2");
-      console.log("from gie 2 222");
-
       setState({
         ...state,
         open: true,
@@ -159,11 +200,12 @@ export function BookingForm() {
 
     setFormData({
       ...newformData,
-      eta_distance: Eta.data.distance,
-      eta_distance_price: Eta.data.distance_price,
-      eta_time: Eta.data.time,
-      eta_time_price: Eta.data.time_price,
-      minAmount: Eta.data.min_amount,
+      // eta_distance: Eta.data.distance,
+      // eta_distance_price: Eta.data.distance_price,
+      // eta_time: Eta.data.time,
+      // eta_time_price: Eta.data.time_price,
+      // minAmount: Eta.data.min_amount,
+      priceConfig : configData.data.price
     });
     // console.log(Eta.data);
     setLoading(false);
@@ -181,7 +223,7 @@ export function BookingForm() {
   };
   const confirmBook = async () => {
     // console.log(formData);
-    // return null
+    // return null;
     let userData;
     let regis = false;
     if (allUser.find((d) => d.email === formData.email) === undefined) {
@@ -282,6 +324,13 @@ export function BookingForm() {
             datetime: new Date(),
             timezone: "+07:00",
             type: 20,
+            priceConfig: {
+              base_distance: "0",
+              base_price: "0",
+              minimum_price: "0",
+              price_per_distance: "0",
+              price_per_time: "0",
+            }
           });
           setActiveStep(activeStep - 1);
         } else {
@@ -291,6 +340,13 @@ export function BookingForm() {
               open: true,
               message:
                 "มีการเข้าสู่ระบบจากอุปกรณ์อื่น : กรุณาเข้าสู่ระบบอีกครั้ง",
+              type: "error",
+            });
+          } else {
+            setState({
+              ...state,
+              open: true,
+              message: res?.data.error_message,
               type: "error",
             });
           }
@@ -336,7 +392,7 @@ export function BookingForm() {
           </Typography>
         </Toolbar> */}
       </AppBar>
-      <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
+      <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
         <Paper
           variant="outlined"
           sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
